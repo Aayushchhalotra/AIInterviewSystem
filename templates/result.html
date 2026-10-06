@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>AI Interview Report</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+
+        .result-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 25px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            margin-bottom: 8px;
+        }
+
+        .score-box {
+            text-align: center;
+            padding: 35px;
+            border-radius: 18px;
+            background: #f3f4f6;
+            margin-bottom: 30px;
+        }
+
+        .score {
+            font-size: 55px;
+            font-weight: bold;
+            margin: 10px 0;
+            color:#111827;
+        }
+
+        .percentage {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .performance {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+
+        .section {
+            margin-top: 30px;
+        }
+
+        .section h2 {
+            margin-bottom: 15px;
+        }
+
+        .analysis-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .metric-card {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 14px;
+            background: white;
+            text-align: center;
+        }
+
+        .metric-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 28px;
+            font-weight: bold;
+            color:#111827;
+        }
+
+        .answer-card {
+            padding: 25px;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            border-radius: 15px;
+            background: white;
+        }
+
+        .question {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .answer {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .score-line {
+            margin-top: 15px;
+            font-size: 17px;
+            color:#111827;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            line-height: 1.6;
+        }
+
+        .concept-box {
+            margin-top: 15px;
+        }
+
+        .concept {
+            display: inline-block;
+            padding: 6px 10px;
+            margin: 4px;
+            border-radius: 8px;
+            background: #f1f1f1;
+            font-size: 13px;
+        }
+
+        .strengths,
+        .improvements {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 14px;
+            margin-top: 15px;
+        }
+
+        .strengths ul,
+        .improvements ul {
+            margin: 10px 0 0 20px;
+        }
+
+        .strengths li,
+        .improvements li {
+            margin: 8px 0;
+        }
+
+        .button-area {
+            text-align: center;
+            margin-top: 35px;
+        }
+
+        .button-area button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        @media (max-width: 600px) {
+
+            .result-container {
+                padding: 15px;
+                margin: 20px auto;
+            }
+
+            .score {
+                font-size: 42px;
+            }
+
+            .answer-card {
+                padding: 18px;
+            }
+
+        }
+/* Fix text visibility on white result cards */
+
+.answer-card {
+    color: #111827;
+}
+
+.question {
+    color: #111827;
+}
+
+.answer {
+    color: #111827;
+}
+
+.score-line {
+    color: #111827;
+}
+
+.concept {
+    color: #111827;
+}
+
+.feedback {
+    color: #111827;
+}
+
+.feedback p {
+    color: #374151;
+}
+
+.strengths,
+.improvements {
+    color: #111827;
+}
+    </style>
+
+</head>
+
+
+<body>
+
+    <!-- NAVIGATION -->
+
+    <nav>
+
+        <div class="logo">
+            AI Interview Prep
+        </div>
+
+        <div class="nav-links">
+
+            <a href="/dashboard">
+                Dashboard
+            </a>
+
+            <a href="/logout">
+                Logout
+            </a>
+
+        </div>
+
+    </nav>
+
+
+    <div class="result-container">
+
+
+        <!-- HEADER -->
+
+        <div class="header">
+
+            <h1>
+                AI Interview Report 🎉
+            </h1>
+
+            <p>
+                Well done, {{ name }}!
+            </p>
+
+        </div>
+
+
+        <!-- FINAL SCORE -->
+
+        <div class="score-box">
+
+            <h2>
+                Overall Score
+            </h2>
+
+            <div class="score">
+
+                {{ total_score }} / {{ max_score }}
+
+            </div>
+
+            <div class="percentage">
+
+                {{ percentage }}%
+
+            </div>
+
+            <div class="performance">
+
+                Performance:
+                <strong>{{ performance }}</strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- AI METRICS -->
+
+        <div class="section">
+
+            <h2>
+                AI Performance Analysis
+            </h2>
+
+            <div class="analysis-grid">
+
+
+                {% set semantic_total = 0 %}
+                {% set coverage_total = 0 %}
+                {% set quality_total = 0 %}
+                {% set depth_total = 0 %}
+                {% set specificity_total = 0 %}
+
+                {% for item in answers %}
+
+                    {% set semantic_total =
+                        semantic_total + item.semantic_score %}
+
+                    {% set coverage_total =
+                        coverage_total + item.coverage_score %}
+
+                    {% set quality_total =
+                        quality_total + item.quality_score %}
+
+                    {% set depth_total =
+                        depth_total + item.get('depth_score', 0) %}
+
+                    {% set specificity_total =
+                        specificity_total + item.get('specificity_score', 0) %}
+
+                {% endfor %}
+
+
+                {% if answers|length > 0 %}
+
+                    {% set semantic_avg =
+                        (semantic_total / answers|length)|round(1) %}
+
+                    {% set coverage_avg =
+                        (coverage_total / answers|length)|round(1) %}
+
+                    {% set quality_avg =
+                        (quality_total / answers|length)|round(1) %}
+
+                    {% set depth_avg =
+                        (depth_total / answers|length)|round(1) %}
+
+                    {% set specificity_avg =
+                        (specificity_total / answers|length)|round(1) %}
+
+                {% else %}
+
+                    {% set semantic_avg = 0 %}
+                    {% set coverage_avg = 0 %}
+                    {% set quality_avg = 0 %}
+                    {% set depth_avg = 0 %}
+                    {% set specificity_avg = 0 %}
+
+                {% endif %}
+
+
+                <div class="metric-card">
+
+                    <div class="metric-title">
+                        Semantic Relevance
+                    </div>
+
+                    <div class="metric-value">
+                        {{ semantic_avg }}/10
+                    </div>
+
+                </div>
+
+
+                <div class="metric-card">
+
+                    <div class="metric-title">
+                        Concept Coverage
+                    </div>
+
+                    <div class="metric-value">
+                        {{ coverage_avg }}/10
+                    </div>
+
+                </div>
+
+
+                <div class="metric-card">
+
+                    <div class="metric-title">
+                        Answer Quality
+                    </div>
+
+                    <div class="metric-value">
+                        {{ quality_avg }}/10
+                    </div>
+
+                </div>
+
+
+                <div class="metric-card">
+
+                    <div class="metric-title">
+                        Answer Depth
+                    </div>
+
+                    <div class="metric-value">
+                        {{ depth_avg }}/10
+                    </div>
+
+                </div>
+
+
+                <div class="metric-card">
+
+                    <div class="metric-title">
+                        Specificity
+                    </div>
+
+                    <div class="metric-value">
+                        {{ specificity_avg }}/10
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+        <!-- QUESTION ANALYSIS -->
+
+        <div class="section">
+
+            <h2>
+                Question-by-Question AI Analysis
+            </h2>
+
+
+            {% for item in answers %}
+
+            <div class="answer-card">
+
+
+                <p class="question">
+
+                    Q{{ loop.index }}.
+                    {{ item.question }}
+
+                </p>
+
+
+                <p>
+                    <strong>Your Answer:</strong>
+                </p>
+
+
+                <div class="answer">
+
+                    {{ item.answer }}
+
+                </div>
+
+
+                <div class="score-line">
+
+                    <strong>
+                        AI Score:
+                    </strong>
+
+                    {{ item.score }} / 10
+
+                </div>
+
+
+                <!-- INDIVIDUAL METRICS -->
+
+                <div class="concept-box">
+
+                    <span class="concept">
+                        Semantic:
+                        {{ item.semantic_score }}/10
+                    </span>
+
+                    <span class="concept">
+                        Coverage:
+                        {{ item.coverage_score }}/10
+                    </span>
+
+                    <span class="concept">
+                        Quality:
+                        {{ item.quality_score }}/10
+                    </span>
+
+                    <span class="concept">
+                        Depth:
+                        {{ item.get('depth_score', 0) }}/10
+                    </span>
+
+                    <span class="concept">
+                        Specificity:
+                        {{ item.get('specificity_score', 0) }}/10
+                    </span>
+
+                </div>
+
+
+                <!-- FEEDBACK -->
+
+                <div class="feedback">
+
+                    <strong>
+                        AI Feedback:
+                    </strong>
+
+                    <p>
+                        {{ item.feedback }}
+                    </p>
+
+                </div>
+
+
+                <!-- FOUND CONCEPTS -->
+
+                {% if item.concepts_found %}
+
+                <div class="concept-box">
+
+                    <strong>
+                        Concepts Detected:
+                    </strong>
+
+                    <br>
+
+                    {% for concept in item.concepts_found %}
+
+                        <span class="concept">
+                            ✓ {{ concept }}
+                        </span>
+
+                    {% endfor %}
+
+                </div>
+
+                {% endif %}
+
+
+                <!-- MISSING CONCEPTS -->
+
+                {% if item.missing_concepts %}
+
+                <div class="concept-box">
+
+                    <strong>
+                        Missing Concepts:
+                    </strong>
+
+                    <br>
+
+                    {% for concept in item.missing_concepts %}
+
+                        <span class="concept">
+                            {{ concept }}
+                        </span>
+
+                    {% endfor %}
+
+                </div>
+
+                {% endif %}
+
+
+                <!-- STRENGTHS -->
+
+                {% if item.strengths %}
+
+                <div class="strengths">
+
+                    <strong>
+                        Strengths
+                    </strong>
+
+                    <ul>
+
+                        {% for strength in item.strengths %}
+
+                            <li>
+                                ✓ {{ strength }}
+                            </li>
+
+                        {% endfor %}
+
+                    </ul>
+
+                </div>
+
+                {% endif %}
+
+
+                <!-- IMPROVEMENTS -->
+
+                {% if item.improvements %}
+
+                <div class="improvements">
+
+                    <strong>
+                        Areas to Improve
+                    </strong>
+
+                    <ul>
+
+                        {% for improvement in item.improvements %}
+
+                            <li>
+                                • {{ improvement }}
+                            </li>
+
+                        {% endfor %}
+
+                    </ul>
+
+                </div>
+
+                {% endif %}
+
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        <!-- BUTTON -->
+
+        <div class="button-area">
+
+            <a href="/dashboard">
+
+                <button>
+                    Back to Dashboard
+                </button>
+
+            </a>
+
+        </div>
+
+
+    </div>
+
+</body>
+
+</html>

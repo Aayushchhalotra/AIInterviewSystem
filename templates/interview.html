@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>AI Interview Prep</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+
+<nav>
+
+    <div class="logo">
+        🤖 AI Interview Prep
+    </div>
+
+    <div class="nav-links">
+
+        <a href="/dashboard">Dashboard</a>
+
+        <a href="/logout">Logout</a>
+
+    </div>
+
+</nav>
+
+
+<!-- ================= MAIN ================= -->
+
+<div class="container">
+
+    <div class="interview-box card">
+
+        <!-- HEADER -->
+
+        <div style="text-align:center;">
+
+            <span class="badge">
+                🤖 AI Interview Mode
+            </span>
+
+            <h1>
+                AI Interview
+            </h1>
+
+            <p>
+                Welcome, <strong>{{ name }}</strong> 👋
+            </p>
+
+        </div>
+
+
+        <!-- ================= PROGRESS ================= -->
+
+        <div style="margin-top:35px;">
+
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                margin-bottom:10px;
+            ">
+
+                <span class="question-number">
+
+                    Question {{ question_number }}
+                    of {{ total_questions }}
+
+                </span>
+
+                <span style="color:#94a3b8;">
+
+                    {{ ((question_number * 100) / total_questions)|round|int }}%
+
+                </span>
+
+            </div>
+
+
+            <div class="progress-container">
+
+                <div
+                    class="progress-bar"
+                    style="
+                        width: {{ ((question_number * 100) / total_questions)|round|int }}%;
+                    ">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= TIMER ================= -->
+
+        <div
+            class="timer"
+            id="timer"
+            style="
+                text-align:center;
+                padding:14px;
+                border-radius:14px;
+                background:rgba(96,165,250,0.08);
+                border:1px solid rgba(96,165,250,0.15);
+            ">
+
+            ⏱️ Time Remaining:
+
+            <span id="time">
+                60
+            </span>
+
+            seconds
+
+        </div>
+
+
+        <!-- ================= QUESTION ================= -->
+
+        <div
+            class="question-box"
+            style="
+                margin-top:30px;
+                padding:25px;
+                border-radius:18px;
+                background:rgba(2,6,23,0.55);
+                border:1px solid rgba(255,255,255,0.07);
+            ">
+
+            <span class="badge">
+
+                Question {{ question_number }}
+
+            </span>
+
+
+            <h2 class="question">
+
+                {{ question }}
+
+            </h2>
+
+
+            <p class="question-info">
+
+                💡 Take your time and answer clearly.
+
+            </p>
+
+        </div>
+
+
+        <!-- ================= ANSWER ================= -->
+
+        <form
+            action="/evaluate"
+            method="POST"
+            id="answerForm"
+            style="margin-top:30px;">
+
+
+            <input
+                type="hidden"
+                name="question"
+                value="{{ question }}">
+
+
+            <label
+                for="answer"
+                style="
+                    display:block;
+                    margin-bottom:10px;
+                    font-weight:600;
+                ">
+
+                💬 Your Answer
+
+            </label>
+
+
+            <textarea
+                name="answer"
+                id="answer"
+                rows="8"
+                placeholder="Type your answer here or use the microphone..."
+                required></textarea>
+
+
+            <!-- ================= VOICE INPUT ================= -->
+
+            <div
+                style="
+                    margin-top:15px;
+                    padding:18px;
+                    border-radius:16px;
+                    background:rgba(96,165,250,0.06);
+                    border:1px solid rgba(96,165,250,0.15);
+                    text-align:center;
+                ">
+
+                <div
+                    style="
+                        font-size:14px;
+                        color:#94a3b8;
+                        margin-bottom:12px;
+                    ">
+
+                    🎤 Answer using your voice
+
+                </div>
+
+
+                <button
+                    type="button"
+                    id="startVoice"
+                    style="
+                        width:auto;
+                        min-width:180px;
+                        margin:5px;
+                    ">
+
+                    🎤 Start Speaking
+
+                </button>
+
+
+                <button
+                    type="button"
+                    id="stopVoice"
+                    disabled
+                    style="
+                        width:auto;
+                        min-width:150px;
+                        margin:5px;
+                        opacity:0.6;
+                    ">
+
+                    🛑 Stop
+
+                </button>
+
+
+                <p
+                    id="voiceStatus"
+                    style="
+                        margin:12px 0 0;
+                        font-size:13px;
+                        color:#64748b;
+                    ">
+
+                    Click "Start Speaking" and speak your answer.
+
+                </p>
+
+            </div>
+
+
+            <!-- ================= SUBMIT ================= -->
+
+            <button
+                type="submit"
+                id="submitButton"
+                style="
+                    width:100%;
+                    margin-top:15px;
+                ">
+
+                {% if question_number == total_questions %}
+
+                    🏁 Submit & Finish Interview
+
+                {% else %}
+
+                    ➡️ Submit & Next Question
+
+                {% endif %}
+
+            </button>
+
+
+        </form>
+
+
+        <p style="
+            text-align:center;
+            margin-top:20px;
+            font-size:13px;
+            color:#64748b;
+        ">
+
+            🔒 Your answer will be evaluated by the AI system.
+
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script>
+
+let timeLeft = 60;
+
+let timer;
+
+
+/* =========================================================
+   TIMER
+========================================================= */
+
+function startTimer() {
+
+    clearInterval(timer);
+
+    timeLeft = 60;
+
+    const timeElement =
+        document.getElementById("time");
+
+    const timerElement =
+        document.getElementById("timer");
+
+
+    timeElement.innerText = timeLeft;
+
+    timerElement.classList.remove("warning");
+
+
+    timer = setInterval(function () {
+
+        timeLeft--;
+
+        timeElement.innerText = timeLeft;
+
+
+        if (timeLeft <= 10) {
+
+            timerElement.classList.add("warning");
+
+        }
+
+
+        if (timeLeft <= 0) {
+
+            clearInterval(timer);
+
+            timeElement.innerText = "0";
+
+            timerElement.innerHTML =
+                "⏰ Time is over. You can still submit your answer.";
+
+        }
+
+    }, 1000);
+
+}
+
+
+/* =========================================================
+   VOICE / SPEECH TO TEXT
+========================================================= */
+
+const answerBox =
+    document.getElementById("answer");
+
+const startVoiceButton =
+    document.getElementById("startVoice");
+
+const stopVoiceButton =
+    document.getElementById("stopVoice");
+
+const voiceStatus =
+    document.getElementById("voiceStatus");
+
+
+let recognition = null;
+
+let isListening = false;
+
+
+/* Check browser support */
+
+if (
+    "SpeechRecognition" in window ||
+    "webkitSpeechRecognition" in window
+) {
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+
+    recognition = new SpeechRecognition();
+
+
+    /* Continuous speech */
+
+    recognition.continuous = true;
+
+
+    /* Give results while speaking */
+
+    recognition.interimResults = true;
+
+
+    /*
+       English is selected because this is
+       an English interview system.
+    */
+
+    recognition.lang = "en-US";
+
+
+    /* ================================
+       SPEECH RESULT
+    ================================= */
+
+    recognition.onresult = function(event) {
+
+        let finalTranscript = "";
+
+        let interimTranscript = "";
+
+
+        for (
+            let i = event.resultIndex;
+            i < event.results.length;
+            i++
+        ) {
+
+            const transcript =
+                event.results[i][0].transcript;
+
+
+            if (event.results[i].isFinal) {
+
+                finalTranscript += transcript + " ";
+
+            } else {
+
+                interimTranscript += transcript;
+
+            }
+
+        }
+
+
+        /*
+           Add recognized final text
+           to existing answer.
+        */
+
+        if (finalTranscript.trim()) {
+
+            const currentText =
+                answerBox.value.trim();
+
+
+            if (currentText) {
+
+                answerBox.value =
+                    currentText +
+                    " " +
+                    finalTranscript.trim();
+
+            } else {
+
+                answerBox.value =
+                    finalTranscript.trim();
+
+            }
+
+
+            /* Trigger validation */
+
+            answerBox.dispatchEvent(
+                new Event("input")
+            );
+
+        }
+
+
+        if (interimTranscript) {
+
+            voiceStatus.innerText =
+                "🎙️ Listening: " +
+                interimTranscript;
+
+        }
+
+    };
+
+
+    /* ================================
+       START
+    ================================= */
+
+    recognition.onstart = function() {
+
+        isListening = true;
+
+
+        startVoiceButton.disabled = true;
+
+        stopVoiceButton.disabled = false;
+
+
+        startVoiceButton.style.opacity = "0.6";
+
+        stopVoiceButton.style.opacity = "1";
+
+
+        voiceStatus.innerText =
+            "🎙️ Listening... Speak your answer.";
+
+    };
+
+
+    /* ================================
+       STOP
+    ================================= */
+
+    recognition.onend = function() {
+
+        isListening = false;
+
+
+        startVoiceButton.disabled = false;
+
+        stopVoiceButton.disabled = true;
+
+
+        startVoiceButton.style.opacity = "1";
+
+        stopVoiceButton.style.opacity = "0.6";
+
+
+        voiceStatus.innerText =
+            "✅ Voice input stopped. You can continue speaking or edit your answer.";
+
+    };
+
+
+    /* ================================
+       ERROR
+    ================================= */
+
+    recognition.onerror = function(event) {
+
+        isListening = false;
+
+
+        startVoiceButton.disabled = false;
+
+        stopVoiceButton.disabled = true;
+
+
+        startVoiceButton.style.opacity = "1";
+
+        stopVoiceButton.style.opacity = "0.6";
+
+
+        if (event.error === "not-allowed") {
+
+            voiceStatus.innerText =
+                "❌ Microphone permission denied. Please allow microphone access.";
+
+        }
+
+        else if (event.error === "no-speech") {
+
+            voiceStatus.innerText =
+                "⚠️ No speech detected. Please try again.";
+
+        }
+
+        else if (event.error === "network") {
+
+            voiceStatus.innerText =
+                "❌ Network error occurred during voice recognition.";
+
+        }
+
+        else {
+
+            voiceStatus.innerText =
+                "❌ Voice recognition error: " +
+                event.error;
+
+        }
+
+    };
+
+
+    /* ================================
+       START BUTTON
+    ================================= */
+
+    startVoiceButton.addEventListener(
+        "click",
+        function() {
+
+            if (!recognition) {
+                return;
+            }
+
+
+            try {
+
+                recognition.start();
+
+            } catch (error) {
+
+                voiceStatus.innerText =
+                    "⚠️ Voice recognition is already running.";
+
+            }
+
+        }
+    );
+
+
+    /* ================================
+       STOP BUTTON
+    ================================= */
+
+    stopVoiceButton.addEventListener(
+        "click",
+        function() {
+
+            if (
+                recognition &&
+                isListening
+            ) {
+
+                recognition.stop();
+
+            }
+
+        }
+    );
+
+}
+
+
+/* Browser does not support Speech Recognition */
+
+else {
+
+    startVoiceButton.disabled = true;
+
+    stopVoiceButton.disabled = true;
+
+
+    startVoiceButton.style.opacity = "0.5";
+
+    stopVoiceButton.style.opacity = "0.5";
+
+
+    voiceStatus.innerText =
+        "❌ Voice input is not supported in this browser. Please use Google Chrome.";
+
+}
+
+
+/* =========================================================
+   FORM SUBMIT
+========================================================= */
+
+document
+    .getElementById("answerForm")
+    .addEventListener("submit", function () {
+
+        /* Stop voice recognition */
+
+        if (
+            recognition &&
+            isListening
+        ) {
+
+            recognition.stop();
+
+        }
+
+
+        /* Stop timer */
+
+        clearInterval(timer);
+
+
+        const button =
+            document.getElementById("submitButton");
+
+
+        button.disabled = true;
+
+
+        button.innerText =
+            "🤖 AI is evaluating...";
+
+    });
+
+
+/* =========================================================
+   START TIMER
+========================================================= */
+
+startTimer();
+
+</script>
+
+
+</body>
+
+</html>

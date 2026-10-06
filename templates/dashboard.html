@@ -1,0 +1,267 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Interview Prep - Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<!-- =====================================================
+     NAVBAR
+===================================================== -->
+
+<nav>
+
+    <div class="logo">
+        🤖 AI Interview Prep
+    </div>
+
+    <div class="nav-links">
+
+        <a href="/">Home</a>
+
+        <a href="/logout">
+            Logout
+        </a>
+
+    </div>
+
+</nav>
+
+
+<!-- =====================================================
+     DASHBOARD
+===================================================== -->
+
+<div class="container">
+
+    <section class="hero">
+
+        <div class="hero-text">
+
+            <span class="badge">
+                ✨ AI-Powered Interview Platform
+            </span>
+
+            <h1>
+                Welcome, <span>{{ name }}</span> 👋
+            </h1>
+
+            <p>
+                Practice real interview questions, improve your answers,
+                and measure your interview performance with AI.
+            </p>
+
+            <div class="buttons">
+
+                <button onclick="window.location.href='/interview'">
+                    🚀 Start AI Interview
+                </button>
+
+                <button
+                    class="secondary"
+                    onclick="showPerformance()">
+                    📊 View Performance
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         STATS
+    ================================================= -->
+
+    <section class="dashboard-grid">
+
+        <div class="card stat-card">
+
+            <div class="feature-icon">
+                🎯
+            </div>
+
+            <p>
+                Interview Questions
+            </p>
+
+            <div class="stat-number">
+                5
+            </div>
+
+        </div>
+
+
+        <div class="card stat-card">
+
+            <div class="feature-icon">
+                🤖
+            </div>
+
+            <p>
+                AI Evaluation
+            </p>
+
+            <div class="stat-number">
+                ON
+            </div>
+
+        </div>
+
+
+        <div class="card stat-card">
+
+            <div class="feature-icon">
+                📈
+            </div>
+
+            <p>
+                Your Progress
+            </p>
+
+            <div class="stat-number">
+                Ready
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         FEATURES
+    ================================================= -->
+
+    <section class="features">
+
+        <div class="card">
+
+            <div class="feature-icon">
+                🧠
+            </div>
+
+            <h2>
+                AI Evaluation
+            </h2>
+
+            <p>
+                Your answers are evaluated automatically to help
+                you understand your interview performance.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="feature-icon">
+                💬
+            </div>
+
+            <h2>
+                Real Interview Practice
+            </h2>
+
+            <p>
+                Practice answering interview questions in a
+                realistic interview environment.
+            </p>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="feature-icon">
+                📊
+            </div>
+
+            <h2>
+                Performance Analysis
+            </h2>
+
+            <p>
+                Get your final score and identify areas where
+                you can improve.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         CTA
+    ================================================= -->
+
+    <section class="card"
+             style="margin-top: 40px; text-align: center;">
+
+        <span class="badge">
+            🚀 Ready?
+        </span>
+
+        <h2>
+            Start Your Interview
+        </h2>
+
+        <p style="margin-bottom: 25px;">
+            Take a 5-question AI interview and discover
+            how prepared you are.
+        </p>
+
+        <button onclick="window.location.href='/interview'">
+            Start Interview →
+        </button>
+
+    </section>
+
+</div>
+
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer>
+
+    <p>
+        © 2026 AI Interview Prep • Built with Flask & AI
+    </p>
+
+</footer>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script>
+
+function showPerformance() {
+
+    alert(
+        "Performance tracking will be available after completing an interview."
+    );
+
+}
+
+</script>
+
+</body>
+
+</html>
+```

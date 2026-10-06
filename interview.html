@@ -1,0 +1,68 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Interview</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="interview-container">
+
+        <h1>AI Interview Prep</h1>
+
+        <p>Welcome, {{ name }}</p>
+
+        <div class="question-box">
+
+            <h2>Interview Question</h2>
+
+            <p id="question">
+                Tell me about yourself.
+            </p>
+
+        </div>
+
+        <textarea
+            id="answer"
+            placeholder="Type your answer here..."
+            rows="6">
+        </textarea>
+
+        <br><br>
+
+        <button onclick="submitAnswer()">
+            Submit Answer
+        </button>
+
+        <div id="result"></div>
+
+    </div>
+
+<script>
+
+function submitAnswer() {
+
+    let answer = document.getElementById("answer").value;
+
+    if (answer.trim() === "") {
+        alert("Please enter your answer.");
+        return;
+    }
+
+    document.getElementById("result").innerHTML =
+        "<h3>Answer submitted successfully!</h3>" +
+        "<p>AI evaluation will be added next.</p>";
+}
+
+</script>
+
+</body>
+</html>
+```
